@@ -82,8 +82,7 @@ rm /opt/apache-tomcat-6.0.48/webapps/ROOT/ -rf
 cp /ctsms/build/ctsms/web/target/ctsms-1.6.0.war /opt/apache-tomcat-6.0.48/webapps/ROOT.war
 
 ###setup apache2
-apt-get -y install libapache2-mod-jk
-apt-get -y install libapache2-mod-fcgid
+apt-get -y install apache2 libapache2-mod-jk libapache2-mod-fcgid
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/00_ctsms_http.conf -O /etc/apache2/sites-available/00_ctsms_http.conf
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/00_ctsms_https.conf -O /etc/apache2/sites-available/00_ctsms_https.conf
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/01_signup_http.conf -O /etc/apache2/sites-available/01_signup_http.conf
@@ -137,9 +136,13 @@ sudo -u ctsms /ctsms/dbtool.sh -iai /ctsms/master_data/icd10gm2012_alphaid_edv_a
 sudo -u ctsms /ctsms/dbtool.sh -ios /ctsms/master_data/ops2012syst_claml_20111103.xml -sl de
 sudo -u ctsms /ctsms/dbtool.sh -ioc /ctsms/master_data/ops2011alpha_edv_ascii_20111031.txt -osr ops2012syst_claml_20111103
 
-sudo -u ctsms /ctsms/dbtool.sh -cd -dlk my_department -dp "secret MyDepartment passphrase"
-sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "secret MyDepartment passphrase" -u "phoenix" -p "phoenix" -pp "INVENTORY_VIEW_USER_DEPARTMENT,STAFF_DETAIL_IDENTITY,COURSE_VIEW_USER_DEPARTMENT,TRIAL_VIEW_USER_DEPARTMENT,PROBAND_VIEW_USER_DEPARTMENT,USER_ALL_DEPARTMENTS,INPUT_FIELD_VIEW,INVENTORY_SAVED_SEARCH,STAFF_SAVED_SEARCH,COURSE_SAVED_SEARCH,TRIAL_SAVED_SEARCH,PROBAND_SAVED_SEARCH,USER_MASTER_SEARCH,INPUT_FIELD_SAVED_SEARCH"
+DEPARTMENT_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+USER_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+sudo -u ctsms /ctsms/dbtool.sh -cd -dlk my_department -dp "$DEPARTMENT_PASSWORD"
+sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "phoenix" -p "$USER_PASSWORD" -pp "INVENTORY_VIEW_USER_DEPARTMENT,STAFF_DETAIL_IDENTITY,COURSE_VIEW_USER_DEPARTMENT,TRIAL_VIEW_USER_DEPARTMENT,PROBAND_VIEW_USER_DEPARTMENT,USER_ALL_DEPARTMENTS,INPUT_FIELD_VIEW,INVENTORY_SAVED_SEARCH,STAFF_SAVED_SEARCH,COURSE_SAVED_SEARCH,TRIAL_SAVED_SEARCH,PROBAND_SAVED_SEARCH,USER_MASTER_SEARCH,INPUT_FIELD_SAVED_SEARCH"
 
 ###ready
 systemctl restart tomcat
-echo "Ready! Log in at https://$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/') with username 'phoenix' and password 'phoenix'"
+IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
+echo "Ready! Log in at https://$IP with username 'phoenix' and password '$USER_PASSWORD'."
+echo "The department passphrase for 'my_department' when adding users with /ctsms/dbtool.sh is '$DEPARTMENT_PASSWORD'."
