@@ -144,5 +144,5 @@ sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD"
 ###ready
 systemctl restart tomcat
 IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
-echo "Ready! Log in at https://$IP with username 'phoenix' password '$USER_PASSWORD' and elevate permissions if this user."
+echo "Ready! Log in at https://$IP with username 'phoenix' password '$USER_PASSWORD', change password and elevate permissions if this user."
 echo "The department passphrase for 'my_department' when adding users with /ctsms/dbtool.sh is '$DEPARTMENT_PASSWORD'."
