@@ -1,5 +1,11 @@
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+
 ###install some general packages:
 #apt-get -y install mc open-vm-tools net-tools
+apt-get -y install sudo
 
 ###create 'ctsms' user
 useradd ctsms -p '*' --groups sudo
