@@ -11,29 +11,6 @@ apt-get -y install sudo
 useradd ctsms -p '*' --groups sudo
 usermod www-data --append --groups ctsms
 
-###install java 6
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/jdk-6u45-linux-x64.bin -O /opt/jdk-6u45-linux-x64.bin
-chmod 744 /opt/jdk-6u45-linux-x64.bin
-cd /opt
-/opt/jdk-6u45-linux-x64.bin
-rm /opt/jdk-6u45-linux-x64.bin -f
-
-###install tomcat6
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-tomcat-6.0.48.tar.gz -O /opt/apache-tomcat-6.0.48.tar.gz
-tar -zxvf /opt/apache-tomcat-6.0.48.tar.gz -C /opt
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/server.xml -O /opt/apache-tomcat-6.0.48/conf/server.xml
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/workers.properties -O /opt/apache-tomcat-6.0.48/conf/workers.properties
-chown ctsms:ctsms /opt/apache-tomcat-6.0.48 -R
-rm /opt/apache-tomcat-6.0.48.tar.gz -f
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.service -O /lib/systemd/system/tomcat.service
-ln -s /lib/systemd/system/tomcat.service /etc/systemd/system/multi-user.target.wants/tomcat.service
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.service.conf -O /etc/systemd/tomcat.service.conf
-mkdir /run/tomcat
-chown ctsms:ctsms /run/tomcat
-chmod 755 /run/tomcat
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.conf -O /etc/tmpfiles.d/tomcat.conf
-systemctl start tomcat
-
 ###prepare /ctsms directory with default-config and master-data
 mkdir /ctsms
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/dbtool.sh -O /ctsms/dbtool.sh
@@ -49,23 +26,46 @@ rm /ctsms/master-data.tar.gz -f
 chown ctsms:ctsms /ctsms -R
 chmod 777 /ctsms -R
 
+###install java 6
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/jdk-6u45-linux-x64.bin -O /ctsms/jdk-6u45-linux-x64.bin
+chmod 744 /chmod/jdk-6u45-linux-x64.bin
+cd /ctsms
+/ctsms/jdk-6u45-linux-x64.bin
+rm /ctsms/jdk-6u45-linux-x64.bin -f
+
+###install tomcat6
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-tomcat-6.0.48.tar.gz -O /ctsms/apache-tomcat-6.0.48.tar.gz
+tar -zxvf /ctsms/apache-tomcat-6.0.48.tar.gz -C /ctsms
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/server.xml -O /ctsms/apache-tomcat-6.0.48/conf/server.xml
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/workers.properties -O /ctsms/apache-tomcat-6.0.48/conf/workers.properties
+chown ctsms:ctsms /ctsms/apache-tomcat-6.0.48 -R
+rm /ctsms/apache-tomcat-6.0.48.tar.gz -f
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.service -O /lib/systemd/system/tomcat.service
+ln -s /lib/systemd/system/tomcat.service /etc/systemd/system/multi-user.target.wants/tomcat.service
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.service.conf -O /etc/systemd/tomcat.service.conf
+mkdir /run/tomcat
+chown ctsms:ctsms /run/tomcat
+chmod 755 /run/tomcat
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.conf -O /etc/tmpfiles.d/tomcat.conf
+systemctl start tomcat
+
 ####build phoenix
 apt-get -y install git
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/primefacesorg.der -O /opt/primefacesorg.der
-/opt/jdk1.6.0_45/bin/keytool -import -noprompt -storepass changeit -alias primefacesorg -keystore /opt/jdk1.6.0_45/jre/lib/security/cacerts -file /opt/primefacesorg.der
-rm /opt/primefacesorg.der -f
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-ext-jdk15on-154.jar -O /opt/jdk1.6.0_45/jre/lib/ext/bcprov-ext-jdk15on-154.jar
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-jdk15on-154.jar -O /opt/jdk1.6.0_45/jre/lib/ext/bcprov-jdk15on-154.jar
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/java.security -O /opt/jdk1.6.0_45/jre/lib/security/java.security
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/primefacesorg.der -O /ctsms/primefacesorg.der
+/ctsms/jdk1.6.0_45/bin/keytool -import -noprompt -storepass changeit -alias primefacesorg -keystore /ctsms/jdk1.6.0_45/jre/lib/security/cacerts -file /ctsms/primefacesorg.der
+rm /ctsms/primefacesorg.der -f
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-ext-jdk15on-154.jar -O /ctsms/jdk1.6.0_45/jre/lib/ext/bcprov-ext-jdk15on-154.jar
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-jdk15on-154.jar -O /ctsms/jdk1.6.0_45/jre/lib/ext/bcprov-jdk15on-154.jar
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/java.security -O /ctsms/jdk1.6.0_45/jre/lib/security/java.security
 mkdir /ctsms/build
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-maven-3.2.5-bin.tar.gz -O /ctsms/build/apache-maven-3.2.5-bin.tar.gz
 cd /ctsms/build
 tar -zxf /ctsms/build/apache-maven-3.2.5-bin.tar.gz
 ln -s /ctsms/build/apache-maven-3.2.5/bin/mvn /usr/bin/mvn
 rm /ctsms/build/apache-maven-3.2.5-bin.tar.gz -f
-export JAVA_HOME=/opt/jdk1.6.0_45
+export JAVA_HOME=/ctsms/jdk1.6.0_45
 git clone https://github.com/phoenixctms/ctsms
-sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/opt\/jdk1.6.0_45<\/java.home>/' /ctsms/build/ctsms/pom.xml
+sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/ctsms\/jdk1.6.0_45<\/java.home>/' /ctsms/build/ctsms/pom.xml
 sed -r -i 's/<stagingDirectory>.+<\/stagingDirectory>/<stagingDirectory>\/ctsms\/build\/ctsms\/target\/site<\/stagingDirectory>/' /ctsms/build/ctsms/pom.xml
 cd /ctsms/build/ctsms
 mvn -Peclipse -Dmaven.test.skip=true
@@ -84,8 +84,8 @@ sudo -u ctsms psql -U ctsms ctsms < /ctsms/build/ctsms/core/db/schema-create.sql
 
 ###deploy ctsms-web.war
 chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.0.war
-rm /opt/apache-tomcat-6.0.48/webapps/ROOT/ -rf
-cp /ctsms/build/ctsms/web/target/ctsms-1.6.0.war /opt/apache-tomcat-6.0.48/webapps/ROOT.war
+rm /ctsms/apache-tomcat-6.0.48/webapps/ROOT/ -rf
+cp /ctsms/build/ctsms/web/target/ctsms-1.6.0.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
 
 ###setup apache2
 apt-get -y install apache2 libapache2-mod-jk libapache2-mod-fcgid
