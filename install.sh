@@ -5,7 +5,7 @@ fi
 
 ###install some general packages:
 #apt-get -y install mc open-vm-tools net-tools
-apt-get -y install sudo
+apt-get -y install sudo wget ca-certificates
 
 ###create 'ctsms' user
 useradd ctsms -p '*' --groups sudo
@@ -24,11 +24,11 @@ mkdir /ctsms/master_data
 tar -zxvf /ctsms/master-data.tar.gz -C /ctsms/master_data --strip-components 1
 rm /ctsms/master-data.tar.gz -f
 chown ctsms:ctsms /ctsms -R
-chmod 777 /ctsms -R
+#chmod 777 /ctsms -R
 
 ###install java 6
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/jdk-6u45-linux-x64.bin -O /ctsms/jdk-6u45-linux-x64.bin
-chmod 744 /chmod/jdk-6u45-linux-x64.bin
+chmod 744 /ctsms/jdk-6u45-linux-x64.bin
 cd /ctsms
 /ctsms/jdk-6u45-linux-x64.bin
 rm /ctsms/jdk-6u45-linux-x64.bin -f
