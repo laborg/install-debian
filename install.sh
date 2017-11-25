@@ -14,11 +14,11 @@ usermod www-data --append --groups ctsms
 ###prepare /ctsms directory with default-config and master-data
 mkdir /ctsms
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/dbtool.sh -O /ctsms/dbtool.sh
-chmod 755 /ctsms/dbtool.sh
 chown ctsms:ctsms /ctsms/dbtool.sh
-wget --no-check-certificate --content-disposition https://github.com/phoenixctms/config-default/archive/master.tar.gz -O /ctsms/config-default.tar.gz
-tar -zxvf /ctsms/config-default.tar.gz -C /ctsms --strip-components 1
-rm /ctsms/config-default.tar.gz -f
+chmod 755 /ctsms/dbtool.sh
+wget --no-check-certificate --content-disposition https://github.com/phoenixctms/config-default/archive/master.tar.gz -O /ctsms/config.tar.gz
+tar -zxvf /ctsms/config.tar.gz -C /ctsms --strip-components 1
+rm /ctsms/config.tar.gz -f
 wget https://api.github.com/repos/phoenixctms/master-data/tarball/master -O /ctsms/master-data.tar.gz
 mkdir /ctsms/master_data
 tar -zxvf /ctsms/master-data.tar.gz -C /ctsms/master_data --strip-components 1
@@ -75,7 +75,7 @@ mvn -f core/pom.xml org.andromda.maven.plugins:andromdapp-maven-plugin:schema -D
 ###install postgres 9.5
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/pgdg.list -O /etc/apt/sources.list.d/pgdg.list
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-apt-get update 
+apt-get update
 apt-get -y install postgresql-9.5
 sudo -u postgres psql postgres -c "CREATE USER ctsms WITH PASSWORD 'ctsms';"
 sudo -u postgres psql postgres -c "CREATE DATABASE ctsms;"
@@ -112,11 +112,18 @@ apt-get -y install libsys-cpuaffinity-perl libarchive-zip-perl libconfig-any-per
 cpanm Dancer::Plugin::I18N
 cpanm Spreadsheet::Reader::Format
 cpanm Spreadsheet::Reader::ExcelXML
-wget --no-check-certificate --content-disposition https://github.com/phoenixctms/bulk-processor/archive/master.tar.gz -O /usr/lib/x86_64-linux-gnu/perl5/5.24/bulk-processor.tar.gz
-tar -zxvf /usr/lib/x86_64-linux-gnu/perl5/5.24/bulk-processor.tar.gz -C /usr/lib/x86_64-linux-gnu/perl5/5.24 --strip-components 1
-chmod 755 /usr/lib/x86_64-linux-gnu/perl5/5.24/CTSMS -R
-chmod 755 /usr/lib/x86_64-linux-gnu/perl5/5.24/Excel -R
-rm /usr/lib/x86_64-linux-gnu/perl5/5.24//bulk-processor.tar.gz -f
+#wget --no-check-certificate --content-disposition https://github.com/phoenixctms/bulk-processor/archive/master.tar.gz -O /usr/lib/x86_64-linux-gnu/perl5/5.24/bulk-processor.tar.gz
+#tar -zxvf /usr/lib/x86_64-linux-gnu/perl5/5.24/bulk-processor.tar.gz -C /usr/lib/x86_64-linux-gnu/perl5/5.24 --strip-components 1
+#chmod 755 /usr/lib/x86_64-linux-gnu/perl5/5.24/CTSMS -R
+#chmod 755 /usr/lib/x86_64-linux-gnu/perl5/5.24/Excel -R
+#rm /usr/lib/x86_64-linux-gnu/perl5/5.24//bulk-processor.tar.gz -f
+wget --no-check-certificate --content-disposition https://github.com/phoenixctms/bulk-processor/archive/master.tar.gz -O /ctsms/bulk-processor.tar.gz
+tar -zxvf /ctsms/bulk-processor.tar.gz -C /ctsms/bulk_processor --strip-components 1
+mkdir /ctsms/bulk_processor/output
+chown ctsms:ctsms /ctsms/bulk_processor -R
+chmod 755 /ctsms/bulk_processor -R
+chmod 777 /ctsms/bulk_processor/output -R
+rm /ctsms/bulk-processor.tar.gz -f
 
 ###initialize phoenix
 sudo -u ctsms /ctsms/dbtool.sh -i -f
@@ -146,6 +153,21 @@ DEPARTMENT_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head 
 USER_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 sudo -u ctsms /ctsms/dbtool.sh -cd -dlk my_department -dp "$DEPARTMENT_PASSWORD"
 sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "phoenix" -p "$USER_PASSWORD" -pp "INVENTORY_MASTER_ALL_DEPARTMENTS,STAFF_MASTER_ALL_DEPARTMENTS,COURSE_MASTER_ALL_DEPARTMENTS,TRIAL_MASTER_ALL_DEPARTMENTS,PROBAND_MASTER_ALL_DEPARTMENTS,USER_ALL_DEPARTMENTS,INPUT_FIELD_MASTER,INVENTORY_MASTER_SEARCH,STAFF_MASTER_SEARCH,COURSE_MASTER_SEARCH,TRIAL_MASTER_SEARCH,PROBAND_MASTER_SEARCH,USER_MASTER_SEARCH,INPUT_FIELD_MASTER_SEARCH"
+
+sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_signup_de" -p "my_department_signup_de" -ul=de -pp "INVENTORY_VIEW_USER_DEPARTMENT,STAFF_DETAIL_IDENTITY,COURSE_VIEW_USER_DEPARTMENT,TRIAL_SIGNUP,PROBAND_SIGNUP,USER_ACTIVE_USER,INPUT_FIELD_VIEW,INVENTORY_NO_SEARCH,STAFF_NO_SEARCH,COURSE_NO_SEARCH,TRIAL_NO_SEARCH,PROBAND_NO_SEARCH,USER_NO_SEARCH,INPUT_FIELD_NO_SEARCH"
+sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_signup_en" -p "my_department_signup_en" -ul=en -pp "INVENTORY_VIEW_USER_DEPARTMENT,STAFF_DETAIL_IDENTITY,COURSE_VIEW_USER_DEPARTMENT,TRIAL_SIGNUP,PROBAND_SIGNUP,USER_ACTIVE_USER,INPUT_FIELD_VIEW,INVENTORY_NO_SEARCH,STAFF_NO_SEARCH,COURSE_NO_SEARCH,TRIAL_NO_SEARCH,PROBAND_NO_SEARCH,USER_NO_SEARCH,INPUT_FIELD_NO_SEARCH"
+
+#CRON_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+#sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_cron" -p "$CRON_PASSWORD" -pp "INVENTORY_MASTER_ALL_DEPARTMENTS,STAFF_MASTER_ALL_DEPARTMENTS,COURSE_MASTER_ALL_DEPARTMENTS,TRIAL_MASTER_ALL_DEPARTMENTS,PROBAND_MASTER_ALL_DEPARTMENTS,USER_ALL_DEPARTMENTS,INPUT_FIELD_MASTER,INVENTORY_MASTER_SEARCH,STAFF_MASTER_SEARCH,COURSE_MASTER_SEARCH,TRIAL_MASTER_SEARCH,PROBAND_MASTER_SEARCH,USER_MASTER_SEARCH,INPUT_FIELD_MASTER_SEARCH"
+#sed
+
+#cd /ctsms/bulk_processor/CTSMS/Projects/Render
+#/ctsms/bulk_processor/CTSMS/Projects/Render/render.sh
+#cd /ctsms/build/ctsms
+#mvn -f web/pom.xml -Dmaven.test.skip=true
+#chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.0.war
+#rm /ctsms/apache-tomcat-6.0.48/webapps/ROOT/ -rf
+#cp /ctsms/build/ctsms/web/target/ctsms-1.6.0.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
 
 ###ready
 systemctl restart tomcat
