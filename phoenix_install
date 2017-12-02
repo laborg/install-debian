@@ -6,4 +6,4 @@ chmod 744 /root/install.sh
 sudo /root/install.sh
 
 # Delete me
-rm /etc/init.d/phoenix_install
+rm /etc/rc3.d/S99phoenix_install
