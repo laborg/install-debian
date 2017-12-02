@@ -1,9 +1,9 @@
 #!/bin/bash
 
 sudo apt-get -y install wget ca-certificates
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/install.sh -O /root/install.sh
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/install.sh -O ~/install.sh
 chmod 744 /root/install.sh
 sudo /root/install.sh
 
 # Delete me
-rm /etc/rc3.d/S99phoenix_install
+rm ~/phoenix_install
