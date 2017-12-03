@@ -3,9 +3,6 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-###renew ip:
-dhclient -v
-
 ###install some general packages:
 #apt-get -y install mc open-vm-tools net-tools
 apt-get -y install sudo wget ca-certificates
