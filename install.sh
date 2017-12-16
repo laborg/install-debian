@@ -51,9 +51,9 @@ systemctl start tomcat
 
 ####build phoenix
 apt-get -y install git
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/primefacesorg.der -O /ctsms/primefacesorg.der
-/ctsms/jdk1.6.0_45/bin/keytool -import -noprompt -storepass changeit -alias primefacesorg -keystore /ctsms/jdk1.6.0_45/jre/lib/security/cacerts -file /ctsms/primefacesorg.der
-rm /ctsms/primefacesorg.der -f
+echo | openssl s_client -showcerts -connect repository.primefaces.org:443 2>&1 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /ctsms/primefacesorg.pem
+/ctsms/jdk1.6.0_45/bin/keytool -import -noprompt -storepass changeit -alias primefacesorg -keystore /ctsms/jdk1.6.0_45/jre/lib/security/cacerts -file /ctsms/primefacesorg.pem
+rm /ctsms/primefacesorg.pem -f
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-ext-jdk15on-154.jar -O /ctsms/jdk1.6.0_45/jre/lib/ext/bcprov-ext-jdk15on-154.jar
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-jdk15on-154.jar -O /ctsms/jdk1.6.0_45/jre/lib/ext/bcprov-jdk15on-154.jar
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/java.security -O /ctsms/jdk1.6.0_45/jre/lib/security/java.security
