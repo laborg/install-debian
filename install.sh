@@ -5,7 +5,7 @@ fi
 
 ###install some general packages:
 #apt-get -y install mc open-vm-tools net-tools
-apt-get -y install sudo wget curl ca-certificates
+apt-get -y install sudo wget ca-certificates
 
 ###create 'ctsms' user
 useradd ctsms -p '*' --groups sudo
