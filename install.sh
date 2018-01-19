@@ -73,9 +73,11 @@ mvn -f core/pom.xml org.andromda.maven.plugins:andromdapp-maven-plugin:schema -D
 mvn -f core/pom.xml org.andromda.maven.plugins:andromdapp-maven-plugin:schema -Dtasks=drop
 
 ###install postgres 9.5
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/pgdg.list -O /etc/apt/sources.list.d/pgdg.list
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-apt-get update
+if [ "$(lsb_release -d | grep -Ei 'debian')" ]; then
+  wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/pgdg.list -O /etc/apt/sources.list.d/pgdg.list
+  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+  apt-get update
+fi
 apt-get -y install postgresql-9.5
 sudo -u postgres psql postgres -c "CREATE USER ctsms WITH PASSWORD 'ctsms';"
 sudo -u postgres psql postgres -c "CREATE DATABASE ctsms;"
@@ -108,7 +110,12 @@ chmod 600 /etc/apache2/ssl/*
 systemctl reload apache2
 
 ###install bulk-processor
-apt-get -y install libsys-cpuaffinity-perl libarchive-zip-perl libconfig-any-perl libdata-dump-perl libdata-dumper-concise-perl libdata-uuid-perl libdata-validate-ip-perl libdate-calc-perl libdate-manip-perl libdatetime-format-iso8601-perl libdatetime-format-strptime-perl libdatetime-perl libdatetime-timezone-perl libdbd-csv-perl libdbd-mysql-perl libdbd-sqlite3-perl libdigest-md5-perl libemail-mime-attachment-stripper-perl libemail-mime-perl libgearman-client-perl libhtml-parser-perl libintl-perl libio-compress-perl libio-socket-ssl-perl libjson-xs-perl liblog-log4perl-perl libmail-imapclient-perl libmarpa-r2-perl libmime-base64-perl libmime-lite-perl libmime-tools-perl libnet-address-ip-local-perl libnet-smtp-ssl-perl libole-storage-lite-perl libphp-serialization-perl libexcel-writer-xlsx-perl libspreadsheet-parseexcel-perl libstring-mkpasswd-perl libtext-csv-xs-perl libtie-ixhash-perl libtime-warp-perl liburi-find-perl libuuid-perl libwww-perl libxml-dumper-perl libxml-libxml-perl libyaml-libyaml-perl libyaml-tiny-perl libtemplate-perl libdancer-perl libdbd-pg-perl libjson-perl libplack-perl memcached libcache-memcached-perl libdancer-session-memcached-perl libgraphviz-perl gnuplot imagemagick ghostscript build-essential cpanminus
+apt-get -y install libarchive-zip-perl libconfig-any-perl libdata-dump-perl libdata-dumper-concise-perl libdata-uuid-perl libdata-validate-ip-perl libdate-calc-perl libdate-manip-perl libdatetime-format-iso8601-perl libdatetime-format-strptime-perl libdatetime-perl libdatetime-timezone-perl libdbd-csv-perl libdbd-mysql-perl libdbd-sqlite3-perl libdigest-md5-perl libemail-mime-attachment-stripper-perl libemail-mime-perl libgearman-client-perl libhtml-parser-perl libintl-perl libio-compress-perl libio-socket-ssl-perl libjson-xs-perl liblog-log4perl-perl libmail-imapclient-perl libmarpa-r2-perl libmime-base64-perl libmime-lite-perl libmime-tools-perl libnet-address-ip-local-perl libnet-smtp-ssl-perl libole-storage-lite-perl libphp-serialization-perl libexcel-writer-xlsx-perl libspreadsheet-parseexcel-perl libstring-mkpasswd-perl libtext-csv-xs-perl libtie-ixhash-perl libtime-warp-perl liburi-find-perl libuuid-perl libwww-perl libxml-dumper-perl libxml-libxml-perl libyaml-libyaml-perl libyaml-tiny-perl libtemplate-perl libdancer-perl libdbd-pg-perl libjson-perl libplack-perl memcached libcache-memcached-perl libdancer-session-memcached-perl libgraphviz-perl gnuplot imagemagick ghostscript build-essential cpanminus
+if [ "$(lsb_release -d | grep -Ei 'debian')" ]; then
+  $DEBIAN && apt-get -y install libsys-cpuaffinity-perl
+else
+  cpanm threads::shared
+fi
 cpanm Dancer::Plugin::I18N
 cpanm Spreadsheet::Reader::Format
 cpanm Spreadsheet::Reader::ExcelXML
