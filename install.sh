@@ -4,6 +4,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 ###install some general packages:
+apt-get update
 #apt-get -y install mc open-vm-tools net-tools
 apt-get -y install sudo wget ca-certificates
 
@@ -90,7 +91,6 @@ rm /ctsms/apache-tomcat-6.0.48/webapps/ROOT/ -rf
 cp /ctsms/build/ctsms/web/target/ctsms-1.6.0.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
 
 ###setup apache2
-apt-get update
 apt-get -y install apache2 libapache2-mod-jk libapache2-mod-fcgid
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/00_ctsms_http.conf -O /etc/apache2/sites-available/00_ctsms_http.conf
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/00_ctsms_https.conf -O /etc/apache2/sites-available/00_ctsms_https.conf
