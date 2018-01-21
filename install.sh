@@ -187,4 +187,4 @@ cp /ctsms/build/ctsms/web/target/ctsms-1.6.0.war /ctsms/apache-tomcat-6.0.48/web
 systemctl start tomcat
 echo "Phoenix CTMS is starting..."
 echo "The department passphrase for 'my_department' when adding users with /ctsms/dbtool.sh is '$DEPARTMENT_PASSWORD'."
-echo "Log in at https://$IP with username 'phoenix' password '$USER_PASSWORD' and change the one-time password."
+echo "Log in at https://$IP with username 'phoenix' password '$USER_PASSWORD'."
