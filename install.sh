@@ -86,9 +86,9 @@ sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE ctsms to cts
 sudo -u ctsms psql -U ctsms ctsms < /ctsms/build/ctsms/core/db/schema-create.sql
 
 ###deploy ctsms-web.war
-chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.0.war
+chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.1.war
 rm /ctsms/apache-tomcat-6.0.48/webapps/ROOT/ -rf
-cp /ctsms/build/ctsms/web/target/ctsms-1.6.0.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
+cp /ctsms/build/ctsms/web/target/ctsms-1.6.1.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
 
 ###setup apache2
 apt-get -y install apache2 libapache2-mod-jk libapache2-mod-fcgid
@@ -178,10 +178,10 @@ cd /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/Render
 ./render.sh
 cd /ctsms/build/ctsms
 mvn -f web/pom.xml -Dmaven.test.skip=true
-chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.0.war
+chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.1.war
 systemctl stop tomcat
 rm /ctsms/apache-tomcat-6.0.48/webapps/ROOT/ -rf
-cp /ctsms/build/ctsms/web/target/ctsms-1.6.0.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
+cp /ctsms/build/ctsms/web/target/ctsms-1.6.1.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
 
 ###ready
 systemctl start tomcat
