@@ -5,7 +5,10 @@ fi
 
 ###install some general packages:
 apt-get update
-#apt-get -y install mc open-vm-tools net-tools
+#apt-get -y install open-vm-tools
+#apt-get -y install net-tools
+#apt-get -y install mc
+#apt-get -y install ssh
 apt-get -y install sudo wget ca-certificates lsb-release
 
 ###create 'ctsms' user
@@ -27,12 +30,11 @@ rm /ctsms/master-data.tar.gz -f
 chown ctsms:ctsms /ctsms -R
 #chmod 777 /ctsms -R
 
-###install java 6
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/jdk-6u45-linux-x64.bin -O /ctsms/jdk-6u45-linux-x64.bin
-chmod 744 /ctsms/jdk-6u45-linux-x64.bin
-cd /ctsms
-/ctsms/jdk-6u45-linux-x64.bin
-rm /ctsms/jdk-6u45-linux-x64.bin -f
+###install java 7
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/jdk-7u80-linux-x64.tar.gz -O /ctsms/jdk-7u80-linux-x64.tar.gz
+tar -zxvf /ctsms/jdk-7u80-linux-x64.tar.gz -C /ctsms
+chown root:root /ctsms/jdk1.7.0_80 -R
+rm /ctsms/jdk-7u80-linux-x64.tar.gz -f
 
 ###install tomcat6
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-tomcat-6.0.48.tar.gz -O /ctsms/apache-tomcat-6.0.48.tar.gz
@@ -53,20 +55,20 @@ systemctl start tomcat
 ####build phoenix
 apt-get -y install git
 echo | openssl s_client -showcerts -connect repository.primefaces.org:443 2>&1 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /ctsms/primefacesorg.pem
-/ctsms/jdk1.6.0_45/bin/keytool -import -noprompt -storepass changeit -alias primefacesorg -keystore /ctsms/jdk1.6.0_45/jre/lib/security/cacerts -file /ctsms/primefacesorg.pem
+/ctsms/jdk1.7.0_80/bin/keytool -import -noprompt -storepass changeit -alias primefacesorg -keystore /ctsms/jdk1.7.0_80/jre/lib/security/cacerts -file /ctsms/primefacesorg.pem
 rm /ctsms/primefacesorg.pem -f
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-ext-jdk15on-154.jar -O /ctsms/jdk1.6.0_45/jre/lib/ext/bcprov-ext-jdk15on-154.jar
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-jdk15on-154.jar -O /ctsms/jdk1.6.0_45/jre/lib/ext/bcprov-jdk15on-154.jar
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/java.security -O /ctsms/jdk1.6.0_45/jre/lib/security/java.security
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-ext-jdk15on-154.jar -O /ctsms/jdk1.7.0_80/jre/lib/ext/bcprov-ext-jdk15on-154.jar
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-jdk15on-154.jar -O /ctsms/jdk1.7.0_80/jre/lib/ext/bcprov-jdk15on-154.jar
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/java.security -O /ctsms/jdk1.7.0_80/jre/lib/security/java.security
 mkdir /ctsms/build
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-maven-3.2.5-bin.tar.gz -O /ctsms/build/apache-maven-3.2.5-bin.tar.gz
 cd /ctsms/build
 tar -zxf /ctsms/build/apache-maven-3.2.5-bin.tar.gz
 ln -s /ctsms/build/apache-maven-3.2.5/bin/mvn /usr/bin/mvn
 rm /ctsms/build/apache-maven-3.2.5-bin.tar.gz -f
-export JAVA_HOME=/ctsms/jdk1.6.0_45
+export JAVA_HOME=/ctsms/jdk1.7.0_80
 git clone https://github.com/phoenixctms/ctsms
-sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/ctsms\/jdk1.6.0_45<\/java.home>/' /ctsms/build/ctsms/pom.xml
+sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/ctsms\/jdk1.7.0_80<\/java.home>/' /ctsms/build/ctsms/pom.xml
 sed -r -i 's/<stagingDirectory>.+<\/stagingDirectory>/<stagingDirectory>\/ctsms\/build\/ctsms\/target\/site<\/stagingDirectory>/' /ctsms/build/ctsms/pom.xml
 cd /ctsms/build/ctsms
 mvn -Peclipse -Dmaven.test.skip=true
@@ -143,6 +145,7 @@ sudo -u ctsms /ctsms/dbtool.sh -ims /ctsms/master_data/mime.types -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -imc /ctsms/master_data/mime.types -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -imt /ctsms/master_data/mime.types -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -imp /ctsms/master_data/mime.types -e ISO-8859-1
+sudo -u ctsms /ctsms/dbtool.sh -immm /ctsms/master_data/mime.types -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -imifi /ctsms/master_data/mime.types -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -imsi /ctsms/master_data/mime.types -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -impi /ctsms/master_data/mime.types -e ISO-8859-1
@@ -162,13 +165,13 @@ sudo -u ctsms /ctsms/dbtool.sh -ia /ctsms/master_data/asp_register.xls
 DEPARTMENT_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 USER_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 sudo -u ctsms /ctsms/dbtool.sh -cd -dlk my_department -dp "$DEPARTMENT_PASSWORD"
-sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "phoenix" -p "$USER_PASSWORD" -pp "INVENTORY_MASTER_ALL_DEPARTMENTS,STAFF_MASTER_ALL_DEPARTMENTS,COURSE_MASTER_ALL_DEPARTMENTS,TRIAL_MASTER_ALL_DEPARTMENTS,PROBAND_MASTER_ALL_DEPARTMENTS,USER_ALL_DEPARTMENTS,INPUT_FIELD_MASTER,INVENTORY_MASTER_SEARCH,STAFF_MASTER_SEARCH,COURSE_MASTER_SEARCH,TRIAL_MASTER_SEARCH,PROBAND_MASTER_SEARCH,USER_MASTER_SEARCH,INPUT_FIELD_MASTER_SEARCH"
+sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "phoenix" -p "$USER_PASSWORD" -pp "INVENTORY_MASTER_ALL_DEPARTMENTS,STAFF_MASTER_ALL_DEPARTMENTS,COURSE_MASTER_ALL_DEPARTMENTS,TRIAL_MASTER_ALL_DEPARTMENTS,PROBAND_MASTER_ALL_DEPARTMENTS,USER_ALL_DEPARTMENTS,INPUT_FIELD_MASTER,MASS_MAIL_MASTER,INVENTORY_MASTER_SEARCH,STAFF_MASTER_SEARCH,COURSE_MASTER_SEARCH,TRIAL_MASTER_SEARCH,PROBAND_MASTER_SEARCH,USER_MASTER_SEARCH,INPUT_FIELD_MASTER_SEARCH,MASS_MAIL_MASTER_SEARCH"
 
-sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_signup_de" -p "my_department_signup_de" -ul de -pp "INVENTORY_VIEW_USER_DEPARTMENT,STAFF_DETAIL_IDENTITY,COURSE_VIEW_USER_DEPARTMENT,TRIAL_SIGNUP,PROBAND_SIGNUP,USER_ACTIVE_USER,INPUT_FIELD_VIEW,INVENTORY_NO_SEARCH,STAFF_NO_SEARCH,COURSE_NO_SEARCH,TRIAL_NO_SEARCH,PROBAND_NO_SEARCH,USER_NO_SEARCH,INPUT_FIELD_NO_SEARCH"
-sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_signup_en" -p "my_department_signup_en" -ul en -pp "INVENTORY_VIEW_USER_DEPARTMENT,STAFF_DETAIL_IDENTITY,COURSE_VIEW_USER_DEPARTMENT,TRIAL_SIGNUP,PROBAND_SIGNUP,USER_ACTIVE_USER,INPUT_FIELD_VIEW,INVENTORY_NO_SEARCH,STAFF_NO_SEARCH,COURSE_NO_SEARCH,TRIAL_NO_SEARCH,PROBAND_NO_SEARCH,USER_NO_SEARCH,INPUT_FIELD_NO_SEARCH"
+sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_signup_de" -p "my_department_signup_de" -ul de -pp "INVENTORY_VIEW_USER_DEPARTMENT,STAFF_DETAIL_IDENTITY,COURSE_VIEW_USER_DEPARTMENT,TRIAL_SIGNUP,PROBAND_SIGNUP,USER_ACTIVE_USER,INPUT_FIELD_VIEW,MASS_MAIL_SIGNUP,INVENTORY_NO_SEARCH,STAFF_NO_SEARCH,COURSE_NO_SEARCH,TRIAL_NO_SEARCH,PROBAND_NO_SEARCH,USER_NO_SEARCH,INPUT_FIELD_NO_SEARCH,MASS_MAIL_NO_SEARCH"
+sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_signup_en" -p "my_department_signup_en" -ul en -pp "INVENTORY_VIEW_USER_DEPARTMENT,STAFF_DETAIL_IDENTITY,COURSE_VIEW_USER_DEPARTMENT,TRIAL_SIGNUP,PROBAND_SIGNUP,USER_ACTIVE_USER,INPUT_FIELD_VIEW,MASS_MAIL_SIGNUP,INVENTORY_NO_SEARCH,STAFF_NO_SEARCH,COURSE_NO_SEARCH,TRIAL_NO_SEARCH,PROBAND_NO_SEARCH,USER_NO_SEARCH,INPUT_FIELD_NO_SEARCH,MASS_MAIL_NO_SEARCH"
 
 CRON_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
-sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_cron" -p "$CRON_PASSWORD" -pp "INVENTORY_MASTER_ALL_DEPARTMENTS,STAFF_MASTER_ALL_DEPARTMENTS,COURSE_MASTER_ALL_DEPARTMENTS,TRIAL_MASTER_ALL_DEPARTMENTS,PROBAND_MASTER_ALL_DEPARTMENTS,USER_ALL_DEPARTMENTS,INPUT_FIELD_MASTER,INVENTORY_MASTER_SEARCH,STAFF_MASTER_SEARCH,COURSE_MASTER_SEARCH,TRIAL_MASTER_SEARCH,PROBAND_MASTER_SEARCH,USER_MASTER_SEARCH,INPUT_FIELD_MASTER_SEARCH"
+sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD" -u "my_department_cron" -p "$CRON_PASSWORD" -pp "INVENTORY_MASTER_ALL_DEPARTMENTS,STAFF_MASTER_ALL_DEPARTMENTS,COURSE_MASTER_ALL_DEPARTMENTS,TRIAL_MASTER_ALL_DEPARTMENTS,PROBAND_MASTER_ALL_DEPARTMENTS,USER_ALL_DEPARTMENTS,INPUT_FIELD_MASTER,MASS_MAIL_MASTER,INVENTORY_MASTER_SEARCH,STAFF_MASTER_SEARCH,COURSE_MASTER_SEARCH,TRIAL_MASTER_SEARCH,PROBAND_MASTER_SEARCH,USER_MASTER_SEARCH,INPUT_FIELD_MASTER_SEARCH,MASS_MAIL_MASTER_SEARCH"
 sed -r -i "s|ctsmsrestapi_password.*|ctsmsrestapi_password = ${CRON_PASSWORD}|" /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/ETL/Duplicates/config.cfg
 sed -r -i "s|ctsmsrestapi_password.*|ctsmsrestapi_password = ${CRON_PASSWORD}|" /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/ETL/EcrfExporter/config.cfg
 IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
