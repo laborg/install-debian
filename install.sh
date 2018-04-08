@@ -33,6 +33,14 @@ chown ctsms:ctsms /ctsms -R
 ###install java 7
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xaa -O /ctsms/xaa
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xab -O /ctsms/xab
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xac -O /ctsms/xac
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xad -O /ctsms/xad
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xae -O /ctsms/xae
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xaf -O /ctsms/xaf
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xag -O /ctsms/xag
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xah -O /ctsms/xah
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xai -O /ctsms/xai
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xaj -O /ctsms/xaj
 cat /ctsms/xa* > /ctsms/jdk-7u80-linux-x64.tar.gz
 tar -zxvf /ctsms/jdk-7u80-linux-x64.tar.gz -C /ctsms
 chown root:root /ctsms/jdk1.7.0_80 -R
