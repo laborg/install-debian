@@ -31,9 +31,12 @@ chown ctsms:ctsms /ctsms -R
 #chmod 777 /ctsms -R
 
 ###install java 7
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/jdk-7u80-linux-x64.tar.gz -O /ctsms/jdk-7u80-linux-x64.tar.gz
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xaa -O /ctsms/xaa
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xab -O /ctsms/xab
+cat /ctsms/xa* > /ctsms/jdk-7u80-linux-x64.tar.gz
 tar -zxvf /ctsms/jdk-7u80-linux-x64.tar.gz -C /ctsms
 chown root:root /ctsms/jdk1.7.0_80 -R
+rm /ctsms/xa* -f
 rm /ctsms/jdk-7u80-linux-x64.tar.gz -f
 
 ###install tomcat6
