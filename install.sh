@@ -147,6 +147,9 @@ chown ctsms:ctsms /ctsms/bulk_processor -R
 chmod 755 /ctsms/bulk_processor -R
 chmod 777 /ctsms/bulk_processor/output -R
 rm /ctsms/bulk-processor.tar.gz -f
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/ecrfdataexport.sh -O /ctsms/ecrfdataexport.sh
+chown ctsms:ctsms /ctsms/ecrfdataexport.sh
+chmod 755 /ctsms/ecrfdataexport.sh
 
 ###initialize phoenix
 sudo -u ctsms /ctsms/dbtool.sh -i -f
@@ -187,7 +190,7 @@ sudo -u ctsms /ctsms/dbtool.sh -cu -dlk my_department -dp "$DEPARTMENT_PASSWORD"
 sed -r -i "s|ctsmsrestapi_password.*|ctsmsrestapi_password = ${CRON_PASSWORD}|" /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/ETL/Duplicates/config.cfg
 sed -r -i "s|ctsmsrestapi_password.*|ctsmsrestapi_password = ${CRON_PASSWORD}|" /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/ETL/EcrfExporter/config.cfg
 IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
-sed -r -i "s|ctsms_base_uri.*|ctsmsbase_uri = 'https://${IP}'|" /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/ETL/EcrfExporter/settings.yml
+sed -r -i "s|ctsms_base_uri.*|ctsmsbase_uri: 'https://${IP}'|" /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/ETL/EcrfExporter/settings.yml
 
 cd /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/Render
 ./render.sh
