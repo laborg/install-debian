@@ -30,22 +30,8 @@ rm /ctsms/master-data.tar.gz -f
 chown ctsms:ctsms /ctsms -R
 #chmod 777 /ctsms -R
 
-###install java 7
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xaa -O /ctsms/xaa
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xab -O /ctsms/xab
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xac -O /ctsms/xac
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xad -O /ctsms/xad
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xae -O /ctsms/xae
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xaf -O /ctsms/xaf
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xag -O /ctsms/xag
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xah -O /ctsms/xah
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xai -O /ctsms/xai
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/xaj -O /ctsms/xaj
-cat /ctsms/xa* > /ctsms/jdk-7u80-linux-x64.tar.gz
-tar -zxvf /ctsms/jdk-7u80-linux-x64.tar.gz -C /ctsms
-chown root:root /ctsms/jdk1.7.0_80 -R
-rm /ctsms/xa* -f
-rm /ctsms/jdk-7u80-linux-x64.tar.gz -f
+###install OpenJDK 8
+apt-get -y install openjdk-8-jdk
 
 ###install tomcat6
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-tomcat-6.0.48.tar.gz -O /ctsms/apache-tomcat-6.0.48.tar.gz
@@ -65,21 +51,14 @@ systemctl start tomcat
 
 ####build phoenix
 apt-get -y install git
-echo | openssl s_client -showcerts -connect repository.primefaces.org:443 2>&1 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /ctsms/primefacesorg.pem
-/ctsms/jdk1.7.0_80/bin/keytool -import -noprompt -storepass changeit -alias primefacesorg -keystore /ctsms/jdk1.7.0_80/jre/lib/security/cacerts -file /ctsms/primefacesorg.pem
-rm /ctsms/primefacesorg.pem -f
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-ext-jdk15on-154.jar -O /ctsms/jdk1.7.0_80/jre/lib/ext/bcprov-ext-jdk15on-154.jar
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/bcprov-jdk15on-154.jar -O /ctsms/jdk1.7.0_80/jre/lib/ext/bcprov-jdk15on-154.jar
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/java.security -O /ctsms/jdk1.7.0_80/jre/lib/security/java.security
 mkdir /ctsms/build
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-maven-3.2.5-bin.tar.gz -O /ctsms/build/apache-maven-3.2.5-bin.tar.gz
 cd /ctsms/build
 tar -zxf /ctsms/build/apache-maven-3.2.5-bin.tar.gz
 ln -s /ctsms/build/apache-maven-3.2.5/bin/mvn /usr/bin/mvn
 rm /ctsms/build/apache-maven-3.2.5-bin.tar.gz -f
-export JAVA_HOME=/ctsms/jdk1.7.0_80
 git clone https://github.com/phoenixctms/ctsms
-sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/ctsms\/jdk1.7.0_80<\/java.home>/' /ctsms/build/ctsms/pom.xml
+sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/usr\/lib\/jvm\/java-8-openjdk-amd64<\/java.home>/' /ctsms/build/ctsms/pom.xml
 sed -r -i 's/<stagingDirectory>.+<\/stagingDirectory>/<stagingDirectory>\/ctsms\/build\/ctsms\/target\/site<\/stagingDirectory>/' /ctsms/build/ctsms/pom.xml
 cd /ctsms/build/ctsms
 mvn -Peclipse -Dmaven.test.skip=true
@@ -192,6 +171,7 @@ sed -r -i "s|ctsmsrestapi_password.*|ctsmsrestapi_password = ${CRON_PASSWORD}|" 
 IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 sed -r -i "s|ctsms_base_uri.*|ctsms_base_uri: 'https://${IP}'|" /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/ETL/EcrfExporter/settings.yml
 
+###render workflow state diagram images from db and include them for tooltips
 cd /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/Render
 ./render.sh
 cd /ctsms/build/ctsms
