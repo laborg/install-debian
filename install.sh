@@ -4,12 +4,10 @@ if [ "$EUID" -ne 0 ]
 fi
 
 ###install some general packages:
-apt-get update
 #apt-get -y install open-vm-tools
 #apt-get -y install net-tools
 #apt-get -y install mc
-#apt-get -y install ssh
-apt-get -y install sudo wget ca-certificates lsb-release
+apt-get -y install sudo wget lsb-release
 
 ###create 'ctsms' user
 useradd ctsms -p '*' --groups sudo
@@ -76,6 +74,12 @@ sudo -u postgres psql postgres -c "CREATE USER ctsms WITH PASSWORD 'ctsms';"
 sudo -u postgres psql postgres -c "CREATE DATABASE ctsms;"
 sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE ctsms to ctsms;"
 sudo -u ctsms psql -U ctsms ctsms < /ctsms/build/ctsms/core/db/schema-create.sql
+
+###enable ssh and database remote access
+#apt-get -y install ssh
+#sed -r -i "s|#*listen_addresses.*|listen_addresses = '*'|" /etc/postgresql/9.5/main/postgresql.conf
+#echo -e "host\tall\tall\t0.0.0.0/0\tmd5\nhost\tall\tall\t::/0\tmd5" >> /etc/postgresql/9.5/main/pg_hba.conf
+#systemctl restart postgresql
 
 ###deploy ctsms-web.war
 chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.1.war
