@@ -11,7 +11,6 @@ apt-get -y install sudo wget lsb-release
 
 ###create 'ctsms' user
 useradd ctsms -p '*' --groups sudo
-usermod www-data --append --groups ctsms
 
 ###prepare /ctsms directory with default-config and master-data
 mkdir /ctsms
@@ -31,30 +30,25 @@ chown ctsms:ctsms /ctsms -R
 ###install OpenJDK 8
 apt-get -y install openjdk-8-jdk
 
-###install tomcat6
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-tomcat-6.0.48.tar.gz -O /ctsms/apache-tomcat-6.0.48.tar.gz
-tar -zxvf /ctsms/apache-tomcat-6.0.48.tar.gz -C /ctsms
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/server.xml -O /ctsms/apache-tomcat-6.0.48/conf/server.xml
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/workers.properties -O /ctsms/apache-tomcat-6.0.48/conf/workers.properties
-chown ctsms:ctsms /ctsms/apache-tomcat-6.0.48 -R
-rm /ctsms/apache-tomcat-6.0.48.tar.gz -f
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.service -O /lib/systemd/system/tomcat.service
-ln -s /lib/systemd/system/tomcat.service /etc/systemd/system/multi-user.target.wants/tomcat.service
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.service.conf -O /etc/systemd/tomcat.service.conf
-mkdir /run/tomcat
-chown ctsms:ctsms /run/tomcat
-chmod 755 /run/tomcat
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/tomcat.conf -O /etc/tmpfiles.d/tomcat.conf
-systemctl start tomcat
+###install tomcat8
+apt-get -y install libservlet3.1-java tomcat8
+systemctl stop tomcat8
+usermod --append --groups tomcat8,adm ctsms
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/workers.properties -O /etc/tomcat8/workers.properties
+chown root:tomcat8 /etc/tomcat8/workers.properties
+chmod 640 /etc/tomcat8/workers.properties
+chmod 770 /var/log/tomcat8
+chmod g+r /var/log/tomcat8/*
+sed -r -i 's/TOMCAT8_USER.+/TOMCAT8_USER=ctsms/' /etc/default/tomcat8
+sed -r -i 's/TOMCAT8_GROUP.+/TOMCAT8_GROUP=ctsms/' /etc/default/tomcat8
+sed -r -i 's/^JAVA_OPTS.+/JAVA_OPTS="-server -Djava.awt.headless=true -Xms2048m -Xmx4096m -Xss256k -XX:+UseParallelGC -XX:MaxGCPauseMillis=1500 -XX:GCTimeRatio=9 -XX:+CMSClassUnloadingEnabled -XX:ReservedCodeCacheSize=256m"/' /etc/default/tomcat8
+echo 'CTSMS_PROPERTIES=/ctsms/properties' >>/etc/default/tomcat8
+systemctl start tomcat8
 
 ####build phoenix
-apt-get -y install git
+apt-get -y install git maven
 mkdir /ctsms/build
-wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/apache-maven-3.2.5-bin.tar.gz -O /ctsms/build/apache-maven-3.2.5-bin.tar.gz
 cd /ctsms/build
-tar -zxf /ctsms/build/apache-maven-3.2.5-bin.tar.gz
-ln -s /ctsms/build/apache-maven-3.2.5/bin/mvn /usr/bin/mvn
-rm /ctsms/build/apache-maven-3.2.5-bin.tar.gz -f
 git clone https://github.com/phoenixctms/ctsms
 sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/usr\/lib\/jvm\/java-8-openjdk-amd64<\/java.home>/' /ctsms/build/ctsms/pom.xml
 sed -r -i 's/<stagingDirectory>.+<\/stagingDirectory>/<stagingDirectory>\/ctsms\/build\/ctsms\/target\/site<\/stagingDirectory>/' /ctsms/build/ctsms/pom.xml
@@ -83,11 +77,13 @@ sudo -u ctsms psql -U ctsms ctsms < /ctsms/build/ctsms/core/db/schema-create.sql
 
 ###deploy ctsms-web.war
 chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.1.war
-rm /ctsms/apache-tomcat-6.0.48/webapps/ROOT/ -rf
-cp /ctsms/build/ctsms/web/target/ctsms-1.6.1.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
+rm /var/lib/tomcat8/webapps/ROOT/ -rf
+cp /ctsms/build/ctsms/web/target/ctsms-1.6.1.war /var/lib/tomcat8/webapps/ROOT.war
 
 ###setup apache2
 apt-get -y install apache2 libapache2-mod-jk libapache2-mod-fcgid
+#usermod --append --groups ctsms www-data
+##usermod --append --groups tomcat8 www-data
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/00_ctsms_http.conf -O /etc/apache2/sites-available/00_ctsms_http.conf
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/00_ctsms_https.conf -O /etc/apache2/sites-available/00_ctsms_https.conf
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/01_signup_http.conf -O /etc/apache2/sites-available/01_signup_http.conf
@@ -182,8 +178,8 @@ cd /ctsms/build/ctsms
 mvn -f web/pom.xml -Dmaven.test.skip=true
 chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.1.war
 systemctl stop tomcat
-rm /ctsms/apache-tomcat-6.0.48/webapps/ROOT/ -rf
-cp /ctsms/build/ctsms/web/target/ctsms-1.6.1.war /ctsms/apache-tomcat-6.0.48/webapps/ROOT.war
+rm /var/lib/tomcat8/webapps/ROOT/ -rf
+cp /ctsms/build/ctsms/web/target/ctsms-1.6.1.war /var/lib/tomcat8/webapps/ROOT.war
 
 ###ready
 systemctl start tomcat
