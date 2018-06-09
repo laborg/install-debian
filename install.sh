@@ -25,7 +25,6 @@ mkdir /ctsms/master_data
 tar -zxvf /ctsms/master-data.tar.gz -C /ctsms/master_data --strip-components 1
 rm /ctsms/master-data.tar.gz -f
 chown ctsms:ctsms /ctsms -R
-#chmod 777 /ctsms -R
 
 ###install OpenJDK 8
 apt-get -y install openjdk-8-jdk
@@ -36,9 +35,12 @@ systemctl stop tomcat8
 usermod --append --groups tomcat8,adm ctsms
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/workers.properties -O /etc/tomcat8/workers.properties
 chown root:tomcat8 /etc/tomcat8/workers.properties
+wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/server.xml -O /etc/tomcat8/server.xml
+chown root:tomcat8 /etc/tomcat8/server.xml
 chmod 640 /etc/tomcat8/workers.properties
 chmod 770 /var/log/tomcat8
-chmod g+r /var/log/tomcat8/*
+chmod g+w /var/log/tomcat8/*
+chmod 775 /var/lib/tomcat8/webapps
 sed -r -i 's/TOMCAT8_USER.+/TOMCAT8_USER=ctsms/' /etc/default/tomcat8
 sed -r -i 's/TOMCAT8_GROUP.+/TOMCAT8_GROUP=ctsms/' /etc/default/tomcat8
 sed -r -i 's/^JAVA_OPTS.+/JAVA_OPTS="-server -Djava.awt.headless=true -Xms2048m -Xmx4096m -Xss256k -XX:+UseParallelGC -XX:MaxGCPauseMillis=1500 -XX:GCTimeRatio=9 -XX:+CMSClassUnloadingEnabled -XX:ReservedCodeCacheSize=256m"/' /etc/default/tomcat8
@@ -83,7 +85,7 @@ cp /ctsms/build/ctsms/web/target/ctsms-1.6.1.war /var/lib/tomcat8/webapps/ROOT.w
 ###setup apache2
 apt-get -y install apache2 libapache2-mod-jk libapache2-mod-fcgid
 #usermod --append --groups ctsms www-data
-##usermod --append --groups tomcat8 www-data
+usermod --append --groups tomcat8,ctsms www-data
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/00_ctsms_http.conf -O /etc/apache2/sites-available/00_ctsms_http.conf
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/00_ctsms_https.conf -O /etc/apache2/sites-available/00_ctsms_https.conf
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/01_signup_http.conf -O /etc/apache2/sites-available/01_signup_http.conf
