@@ -179,12 +179,12 @@ cd /ctsms/bulk_processor/CTSMS/BulkProcessor/Projects/Render
 cd /ctsms/build/ctsms
 mvn -f web/pom.xml -Dmaven.test.skip=true
 chmod 755 /ctsms/build/ctsms/web/target/ctsms-1.6.1.war
-systemctl stop tomcat
+systemctl stop tomcat8
 rm /var/lib/tomcat8/webapps/ROOT/ -rf
 cp /ctsms/build/ctsms/web/target/ctsms-1.6.1.war /var/lib/tomcat8/webapps/ROOT.war
 
 ###ready
-systemctl start tomcat
+systemctl start tomcat8
 echo "Phoenix CTMS is starting..."
 echo "The department passphrase for 'my_department' when adding users with /ctsms/dbtool.sh is '$DEPARTMENT_PASSWORD'."
 echo "Log in at https://$IP with username 'phoenix' password '$USER_PASSWORD'."
