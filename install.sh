@@ -149,8 +149,8 @@ sudo -u ctsms /ctsms/dbtool.sh -impi /ctsms/master_data/mime.types -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -it /ctsms/master_data/titles.csv -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -ib /ctsms/master_data/kiverzeichnis_gesamt_de_1347893202433.csv -e ISO-8859-1
 sudo -u ctsms /ctsms/dbtool.sh -ic /ctsms/master_data/countries.txt -e ISO-8859-1
-sudo -u ctsms /ctsms/dbtool.sh -iz /ctsms/master_data/streetnames.csv -e ISO-8859-1
-sudo -u ctsms /ctsms/dbtool.sh -is /ctsms/master_data/streetnames.csv -e ISO-8859-1
+sudo -u ctsms /ctsms/dbtool.sh -iz /ctsms/master_data/streetnames.csv -e utf-8
+sudo -u ctsms /ctsms/dbtool.sh -is /ctsms/master_data/streetnames.csv -e utf-8
 
 sudo -u ctsms /ctsms/dbtool.sh -iis /ctsms/master_data/icd10gm2012syst_claml_20110923.xml -sl de
 sudo -u ctsms /ctsms/dbtool.sh -iai /ctsms/master_data/icd10gm2012_alphaid_edv_ascii_20110930.txt -e ISO-8859-1 -isr icd10gm2012syst_claml_20110923
