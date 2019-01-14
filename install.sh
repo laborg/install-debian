@@ -61,6 +61,7 @@ mvn -f core/pom.xml org.andromda.maven.plugins:andromdapp-maven-plugin:schema -D
 
 ###install postgres 9.5
 if [ "$(lsb_release -d | grep -Ei 'debian')" ]; then
+  apt-get install gnupg
   wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/pgdg.list -O /etc/apt/sources.list.d/pgdg.list
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
   apt-get update
