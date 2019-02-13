@@ -118,17 +118,63 @@ libdate-calc-perl \
 libdate-manip-perl \
 libdatetime-format-iso8601-perl \
 libdatetime-format-strptime-perl \
-libdatetime-format-excel-perl \
 libdatetime-perl \
 libdatetime-timezone-perl \
 libdbd-csv-perl \
 libdbd-mysql-perl \
-libdbd-sqlite3-perl libdigest-md5-perl libemail-mime-attachment-stripper-perl libemail-mime-perl libgearman-client-perl libhtml-parser-perl libintl-perl libio-compress-perl libio-socket-ssl-perl libjson-xs-perl liblog-log4perl-perl libmail-imapclient-perl libmarpa-r2-perl libmime-base64-perl libmime-lite-perl libmime-tools-perl libnet-address-ip-local-perl libnet-smtp-ssl-perl libole-storage-lite-perl libphp-serialization-perl libexcel-writer-xlsx-perl libspreadsheet-parseexcel-perl libstring-mkpasswd-perl libtext-csv-xs-perl libtie-ixhash-perl libtime-warp-perl liburi-find-perl libuuid-perl libwww-perl libxml-dumper-perl libxml-libxml-perl libyaml-libyaml-perl libyaml-tiny-perl libtemplate-perl libdancer-perl libdbd-pg-perl libjson-perl libplack-perl memcached libcache-memcached-perl libdancer-session-memcached-perl libgraphviz-perl gnuplot imagemagick ghostscript build-essential cpanminus
+libdbd-sqlite3-perl \
+libdigest-md5-perl \
+libemail-mime-attachment-stripper-perl \
+libemail-mime-perl \
+libgearman-client-perl \
+libhtml-parser-perl \
+libintl-perl \
+libio-compress-perl \
+libio-socket-ssl-perl \
+libjson-xs-perl \
+liblog-log4perl-perl \
+libmail-imapclient-perl \
+libmarpa-r2-perl \
+libmime-base64-perl \
+libmime-lite-perl \
+libmime-tools-perl \
+libnet-address-ip-local-perl \
+libnet-smtp-ssl-perl \
+libole-storage-lite-perl \
+libphp-serialization-perl \
+libexcel-writer-xlsx-perl \
+libspreadsheet-parseexcel-perl \
+libstring-mkpasswd-perl \
+libtext-csv-xs-perl \
+libtie-ixhash-perl \
+libtime-warp-perl \
+liburi-find-perl \
+libuuid-perl \
+libwww-perl \
+libxml-dumper-perl \
+libxml-libxml-perl \
+libyaml-libyaml-perl \
+libyaml-tiny-perl \
+libtemplate-perl \
+libdancer-perl \
+libdbd-pg-perl \
+libjson-perl \
+libplack-perl \
+memcached \
+libcache-memcached-perl \
+libdancer-session-memcached-perl \
+libgraphviz-perl \
+gnuplot \
+imagemagick \
+ghostscript \
+build-essential \
+cpanminus
 if [ "$(lsb_release -d | grep -Ei 'debian')" ]; then
   apt-get -y install libsys-cpuaffinity-perl
 else
   cpanm Sys::CpuAffinity
   cpanm threads::shared
+  cpanm DateTime::Format::Excel
 fi
 cpanm Dancer::Plugin::I18N
 cpanm Spreadsheet::Reader::Format
