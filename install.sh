@@ -102,7 +102,7 @@ a2enmod deflate
 
 ###deploy server certificate
 mkdir /etc/apache2/ssl
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -subj "/C=AT/ST=Austria/L=Graz/O=phoenix/CN=localhost" -out /etc/apache2/ssl/apache.crt
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -subj "/C=AT/ST=Austria/L=Graz/O=phoenix/CN=$HOSTNAME" -out /etc/apache2/ssl/apache.crt
 chmod 600 /etc/apache2/ssl/*
 systemctl reload apache2
 
