@@ -174,8 +174,8 @@ if [ "$(lsb_release -d | grep -Ei 'debian')" ]; then
 else
   cpanm Sys::CpuAffinity
   cpanm threads::shared
-  cpanm DateTime::Format::Excel
 fi
+cpanm DateTime::Format::Excel
 cpanm Dancer::Plugin::I18N
 cpanm Spreadsheet::Reader::Format
 cpanm Spreadsheet::Reader::ExcelXML
