@@ -94,16 +94,17 @@ wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/ports.c
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/blocklist.conf -O /etc/apache2/blocklist.conf
 wget https://raw.githubusercontent.com/phoenixctms/install-debian/master/jk.conf -O /etc/apache2/mods-available/jk.conf
 a2dissite 000-default.conf
-a2ensite 00_ctsms_https.conf
 a2ensite 00_ctsms_http.conf
-a2enmod ssl
 a2enmod rewrite
-a2enmod deflate
+#a2enmod deflate
+systemctl reload apache2
 
 ###deploy server certificate
 mkdir /etc/apache2/ssl
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -subj "/C=AT/ST=Austria/L=Graz/O=phoenix/CN=$HOSTNAME" -out /etc/apache2/ssl/apache.crt
 chmod 600 /etc/apache2/ssl/*
+a2enmod ssl
+a2ensite 00_ctsms_https.conf
 systemctl reload apache2
 
 ###install bulk-processor
