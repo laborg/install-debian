@@ -169,6 +169,8 @@ gnuplot \
 imagemagick \
 ghostscript \
 build-essential \
+libtest-utf8-perl \
+libmoosex-hasdefaults-perl \
 cpanminus
 if [ "$(lsb_release -d | grep -Ei 'debian')" ]; then
   apt-get -y install libsys-cpuaffinity-perl
