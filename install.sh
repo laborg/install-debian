@@ -52,10 +52,10 @@ apt-get -y install git maven
 mkdir /ctsms/build
 cd /ctsms/build
 git clone https://github.com/phoenixctms/ctsms
-sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/usr\/lib\/jvm\/java-8-openjdk-amd64<\/java.home>/' /ctsms/build/ctsms/pom.xml
-sed -r -i 's/<stagingDirectory>.+<\/stagingDirectory>/<stagingDirectory>\/ctsms\/build\/ctsms\/target\/site<\/stagingDirectory>/' /ctsms/build/ctsms/pom.xml
+#sed -r -i 's/<java\.home>.+<\/java\.home>/<java.home>\/usr\/lib\/jvm\/java-8-openjdk-amd64<\/java.home>/' /ctsms/build/ctsms/pom.xml
+#sed -r -i 's/<stagingDirectory>.+<\/stagingDirectory>/<stagingDirectory>\/ctsms\/build\/ctsms\/target\/site<\/stagingDirectory>/' /ctsms/build/ctsms/pom.xml
 cd /ctsms/build/ctsms
-mvn -Peclipse -Dmaven.test.skip=true
+mvn install -DskipTests
 mvn -f core/pom.xml org.andromda.maven.plugins:andromdapp-maven-plugin:schema -Dtasks=create
 mvn -f core/pom.xml org.andromda.maven.plugins:andromdapp-maven-plugin:schema -Dtasks=drop
 
